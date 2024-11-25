@@ -21,10 +21,6 @@ from answers import q1a, q1b
 from answers.q3 import q3
 from answers.q4 import q4
 
-def q2(spark_context: SparkContext, data_frame: DataFrame):
-
-    return
-
 
 if __name__ == '__main__':
 
@@ -39,11 +35,9 @@ if __name__ == '__main__':
 
     rdd = q1b(spark_context, on_server)
 
-    # q2(spark_context, data_frame)
+    q3_result = q3(spark_context, rdd)
 
-    q3(spark_context, rdd)
-
-    # q4(spark_context, rdd)
+    q4_result = q4(spark_context, rdd)
 
     end_time = datetime.now()
 

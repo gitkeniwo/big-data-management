@@ -1,14 +1,6 @@
 from pyspark import SparkConf, SparkContext, RDD
 from pyspark.sql import SparkSession, DataFrame
-from pyspark.sql.types import *
-from pyspark.sql.functions import split, col, size
-from typing import List, Tuple
-import hashlib
-import numpy as np
 from math import ceil, log
-from builtins import min
-from pyspark.sql.functions import col, pow, struct
-from pyspark.ml.linalg import Vectors
 from pyspark.ml.linalg import Vectors, DenseVector
 
 import numpy as np
@@ -27,14 +19,14 @@ def q4(spark_context: SparkContext, rdd: RDD):
     spark_context : SparkContext
     rdd : RDD
     """
-    
-    
-    NumPartition = 8     # for server (2 workers, each work has 40 cores, so 80 cores in total)
+
+    NumPartition = 8  # for server (2 workers, each work has 40 cores, so 80 cores in total)
     taus = [20, 410]
     tau = spark_context.broadcast(taus)
     vectors = rdd.collect()
     vectors_dict = dict(vectors)
-    broadcast_vectors = spark_context.broadcast(vectors_dict) # broadcast this list of vector ID and respective elements to all executors.
+    broadcast_vectors = spark_context.broadcast(
+        vectors_dict)  # broadcast this list of vector ID and respective elements to all executors.
 
     # cartesian join the keys 
     keys = rdd.keys()
@@ -44,8 +36,7 @@ def q4(spark_context: SparkContext, rdd: RDD):
     keys3 = keys3.filter(lambda x: x[0][1] < x[1] and x[0][0] < x[1])
 
     keyRDD = keys3.repartition(NumPartition)
-    #print("Number of partitions: ", keyRDD.getNumPartitions())
-    #print("")
+    # print("Number of partitions: ", keyRDD.getNumPartitions())
 
     print(f"vector count = {len(vectors)}")
     print(f"vectors[0]: {vectors[0]}")
@@ -58,7 +49,7 @@ def q4(spark_context: SparkContext, rdd: RDD):
     e = 2.718
     epsilon = 0.001
     delta = 0.1
-    
+
     w = ceil(e / epsilon)
     d = ceil(log(1 / delta))
     print(f"w = {w}, d = {d}")
@@ -71,7 +62,8 @@ def q4(spark_context: SparkContext, rdd: RDD):
     # print(sketch)
 
     vectors = [v[1] for v in vectors]
+
     # Convert the list of vectors into a DataFrame
     df = SparkSession.createDataFrame([(Vectors.dense(v),) for v in vectors], ["features"])
 
-    return
+    return df
